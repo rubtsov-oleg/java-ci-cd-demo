@@ -41,13 +41,10 @@ jobs:
           Start-Service docker
         shell: pwsh
 
-      - name: Switch to Linux Containers
+      - name: Verify Docker is running in Linux mode
         run: |
-          & 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchLinuxEngine
-        shell: pwsh
-
-      - name: Verify Docker is in Linux mode
-        run: docker info
+          docker info
+        shell: cmd
 
       - name: Build Docker Image
         run: docker build -t java-ci-cd-demo .

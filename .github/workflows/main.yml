@@ -36,26 +36,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Start Docker Service
+      - name: Ensure Docker is running
         run: |
           Start-Service docker
         shell: pwsh
 
-      - name: Verify Docker Mode
-        run: |
-          docker info --format '{{.OSType}}'
-        shell: pwsh
-
-      - name: Ensure Linux Containers
-        run: |
-          & 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchLinuxEngine
-        shell: pwsh
-
       - name: Build Docker Image
-        run: docker build -t java-ci-cd-demo .
+        run: docker build --build-arg BASE_IMAGE=windows -t java-ci-cd-demo .
 
       - name: Run Tests
-        run: docker run --rm java-ci-cd-demo ./mvnw test
+        run: docker run --rm java-ci-cd-demo demo\mvnw.cmd test
 
   build-and-test-macos:
     runs-on: macos-latest
@@ -70,7 +60,7 @@ jobs:
           while ! docker system info > /dev/null 2>&1; do sleep 1; done
 
       - name: Build Docker Image
-        run: docker build -t java-ci-cd-demo .
+        run: docker build --build-arg BASE_IMAGE=linux -t java-ci-cd-demo .
 
       - name: Run Tests
         run: docker run --rm java-ci-cd-demo ./mvnw test

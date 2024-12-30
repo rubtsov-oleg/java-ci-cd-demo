@@ -1,8 +1,12 @@
 # Используем образ с OpenJDK
-FROM openjdk:17-jdk-slim
-
-# Устанавливаем рабочую директорию
+ARG BASE_IMAGE=linux
+FROM openjdk:17-jdk-slim AS linux-base
 WORKDIR /app
+
+FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS windows-base
+WORKDIR /app
+
+FROM ${BASE_IMAGE}-base AS final
 
 # Копируем файл pom.xml для скачивания зависимостей
 COPY demo/pom.xml /app/demo/

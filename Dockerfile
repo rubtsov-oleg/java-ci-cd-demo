@@ -13,6 +13,7 @@ COPY demo /app/demo
 COPY demo/mvnw /app/demo/mvnw
 COPY demo/.mvn /app/demo/.mvn
 
+RUN chmod +x /app/demo/mvnw
 # Переходим в директорию demo и запускаем сборку
 WORKDIR /app/demo
 RUN ./mvnw clean package

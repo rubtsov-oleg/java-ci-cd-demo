@@ -36,14 +36,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Ensure Docker is running
+      - name: Start Docker Service
         run: |
           Start-Service docker
         shell: pwsh
 
-      - name: Verify Docker Linux Mode
+      - name: Verify Docker Mode
         run: |
           docker info --format '{{.OSType}}'
+        shell: pwsh
+
+      - name: Ensure Linux Containers
+        run: |
+          & 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchLinuxEngine
         shell: pwsh
 
       - name: Build Docker Image

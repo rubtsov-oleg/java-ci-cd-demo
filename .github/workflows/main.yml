@@ -41,16 +41,15 @@ jobs:
           Start-Service docker
         shell: pwsh
 
-      - name: Switch to Linux Containers
+      - name: Verify Docker Windows Mode
         run: |
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock alpine:latest echo "Docker is running in Linux mode"
-        shell: pwsh
+          docker run --rm mcr.microsoft.com/windows/servercore:ltsc2022 echo "Docker is running in Windows mode"
 
       - name: Build Docker Image
         run: docker build -t java-ci-cd-demo .
 
       - name: Run Tests
-        run: docker run --rm java-ci-cd-demo ./mvnw test
+        run: docker run --rm java-ci-cd-demo demo\mvnw.cmd test
 
   build-and-test-macos:
     runs-on: macos-latest

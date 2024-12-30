@@ -44,7 +44,7 @@ jobs:
 
       - name: Build and Test
         run: |
-          ./mvnw clean test
+          mvnw.cmd clean test
 
   build-and-test-macos:
     runs-on: macos-latest
@@ -57,6 +57,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: Ensure mvnw is executable
+        run: chmod +x ./mvnw
 
       - name: Build and Test
         run: |

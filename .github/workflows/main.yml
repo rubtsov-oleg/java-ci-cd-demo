@@ -36,15 +36,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Build and Test
+      - name: Start Docker Service
         run: |
-          mvnw.cmd clean test
+          Start-Service docker
+        shell: pwsh
+
+      - name: Verify Docker Mode
+        run: |
+          docker info --format '{{.OSType}}'
+        shell: pwsh
+
+      - name: Ensure Linux Containers
+        run: |
+          & 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchLinuxEngine
+        shell: pwsh
+
+      - name: Build Docker Image
+        run: docker build -t java-ci-cd-demo .
+
+      - name: Run Tests
+        run: docker run --rm java-ci-cd-demo ./mvnw test
 
   build-and-test-macos:
     runs-on: macos-latest
@@ -52,18 +63,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Ensure mvnw is executable
-        run: chmod +x ./mvnw
-
-      - name: Build and Test
+      - name: Set up Docker
         run: |
-          ./mvnw clean test
+          brew install --cask docker
+          open /Applications/Docker.app
+          while ! docker system info > /dev/null 2>&1; do sleep 1; done
+
+      - name: Build Docker Image
+        run: docker build -t java-ci-cd-demo .
+
+      - name: Run Tests
+        run: docker run --rm java-ci-cd-demo ./mvnw test
 
   deploy:
     needs: [build-and-test-linux, build-and-test-windows, build-and-test-macos]

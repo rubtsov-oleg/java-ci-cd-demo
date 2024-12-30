@@ -1,5 +1,6 @@
 # Используем образ с OpenJDK
 ARG BASE_IMAGE=linux
+
 FROM openjdk:17-jdk-slim AS linux-base
 WORKDIR /app
 
@@ -18,10 +19,11 @@ COPY demo/mvnw /app/demo/mvnw
 COPY demo/.mvn /app/demo/.mvn
 COPY demo/mvnw.cmd /app/demo/mvnw.cmd
 
-RUN chmod +x /app/demo/mvnw
+RUN if [ "${BASE_IMAGE}" = "linux" ]; then chmod +x /app/demo/mvnw; fi
+
 # Переходим в директорию demo и запускаем сборку
 WORKDIR /app/demo
-RUN ./mvnw clean package
+RUN ./mvnw clean package || demo\mvnw.cmd clean package
 
 # Указываем команду для запуска приложения
 CMD ["java", "-cp", "target/classes", "org.example.Main"]

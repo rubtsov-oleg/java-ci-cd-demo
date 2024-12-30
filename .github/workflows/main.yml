@@ -25,7 +25,7 @@ jobs:
           sh get-docker.sh
 
       - name: Build Docker Image
-        run: docker build -t java-ci-cd-demo .
+        run: docker build --platform linux/amd64 --build-arg BASE_IMAGE=linux -t java-ci-cd-demo .
 
       - name: Run Tests
         run: docker run --rm java-ci-cd-demo ./mvnw test
@@ -64,7 +64,6 @@ jobs:
 
       - name: Run Tests
         run: docker run --rm java-ci-cd-demo ./mvnw test
-
   deploy:
     needs: [build-and-test-linux, build-and-test-windows, build-and-test-macos]
     runs-on: ubuntu-latest

@@ -36,10 +36,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Docker
+      - name: Ensure Docker is running
         run: |
           Start-Service docker
         shell: pwsh
+
+      - name: Switch to Linux Containers
+        run: |
+          & 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchLinuxEngine
+        shell: pwsh
+
+      - name: Verify Docker is in Linux mode
+        run: docker info
 
       - name: Build Docker Image
         run: docker build -t java-ci-cd-demo .

@@ -14,28 +14,19 @@ concurrency:
 
 jobs:
   build-and-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-
+    runs-on: ubuntu-latest
     steps:
-      # Проверка исходного кода
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Установка Docker
       - name: Set up Docker
-        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           curl -fsSL https://get.docker.com -o get-docker.sh
           sh get-docker.sh
 
-      # Сборка Docker-образа
       - name: Build Docker Image
         run: docker build -t java-ci-cd-demo .
 
-      # Запуск тестов внутри Docker-контейнера
       - name: Run Tests
         run: docker run --rm java-ci-cd-demo ./mvnw test
 
@@ -43,11 +34,9 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
-      # Проверка исходного кода
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Деплой на Render
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}

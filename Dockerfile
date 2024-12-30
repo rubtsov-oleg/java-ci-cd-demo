@@ -10,6 +10,9 @@ COPY demo/pom.xml /app/demo/
 # Копируем исходный код в контейнер
 COPY demo /app/demo
 
+COPY demo/mvnw /app/demo/mvnw
+COPY demo/.mvn /app/demo/.mvn
+
 # Переходим в директорию demo и запускаем сборку
 WORKDIR /app/demo
 RUN ./mvnw clean package

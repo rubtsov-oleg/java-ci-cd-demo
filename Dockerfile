@@ -12,6 +12,7 @@ COPY demo /app/demo
 
 COPY demo/mvnw /app/demo/mvnw
 COPY demo/.mvn /app/demo/.mvn
+COPY demo/mvnw.cmd /app/demo/mvnw.cmd
 
 RUN chmod +x /app/demo/mvnw
 # Переходим в директорию demo и запускаем сборку

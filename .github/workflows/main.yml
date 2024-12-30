@@ -1,0 +1,46 @@
+name: CI/CD Pipeline for Java with Docker
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        run: |
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sh get-docker.sh
+
+      - name: Build Docker Image
+        run: docker build -t java-ci-cd-demo .
+
+      - name: Run Tests
+        run: docker run --rm java-ci-cd-demo ./mvnw test
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          curl -X POST -H "Authorization: Bearer $RENDER_API_KEY" \
+          -d '{"serviceId":"srv-ctpae0d2ng1s73boikcg"}' \
+          https://api.render.com/v1/services/srv-ctpae0d2ng1s73boikcg/deploys

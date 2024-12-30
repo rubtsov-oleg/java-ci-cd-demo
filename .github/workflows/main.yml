@@ -7,6 +7,10 @@ on:
   pull_request:
     branches:
       - main
+      
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
@@ -24,8 +28,8 @@ jobs:
       - name: Set up Docker
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sh get-docker.sh
 
       # Сборка Docker-образа
       - name: Build Docker Image

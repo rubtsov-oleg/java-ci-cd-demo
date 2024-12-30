@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-test:
+  build-and-test-linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -30,8 +30,43 @@ jobs:
       - name: Run Tests
         run: docker run --rm java-ci-cd-demo ./mvnw test
 
+  build-and-test-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build and Test
+        run: |
+          mvnw.cmd clean test
+
+  build-and-test-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Ensure mvnw is executable
+        run: chmod +x ./mvnw
+
+      - name: Build and Test
+        run: |
+          ./mvnw clean test
+
   deploy:
-    needs: build-and-test
+    needs: [build-and-test-linux, build-and-test-windows, build-and-test-macos]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

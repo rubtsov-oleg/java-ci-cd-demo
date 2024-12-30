@@ -41,10 +41,10 @@ jobs:
           Start-Service docker
         shell: pwsh
 
-      - name: Verify Docker is running in Linux mode
+      - name: Switch to Linux Containers
         run: |
-          docker info
-        shell: cmd
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock alpine:latest echo "Docker is running in Linux mode"
+        shell: pwsh
 
       - name: Build Docker Image
         run: docker build -t java-ci-cd-demo .
